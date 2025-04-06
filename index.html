@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS3 & JavaScript Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Theme switcher styles */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+
+        /* Button styles with transition */
+        button {
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        /* Animation for the content box */
+        .content-box {
+            width: 200px;
+            height: 200px;
+            background-color: #3498db;
+            margin: 30px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+        }
+
+        /* Keyframe animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spin-animation {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .bounce-animation {
+            animation: bounce 1s ease infinite;
+        }
+
+        /* Form styles */
+        .preferences-form {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .preferences-form label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .preferences-form input, 
+        .preferences-form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .dark-mode .preferences-form {
+            background-color: #333;
+        }
+
+        .dark-mode button {
+            background-color: #2E7D32;
+        }
+
+        .dark-mode .content-box {
+            background-color: #1565C0;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-switcher">
+        <button id="toggle-theme">Toggle Dark Mode</button>
+    </div>
+
+    <h1>CSS3 & JavaScript Demo</h1>
+    
+    <div class="preferences-form">
+        <h2>User Preferences</h2>
+        <label for="username">Your Name:</label>
+        <input type="text" id="username" placeholder="Enter your name">
+        
+        <label for="fav-color">Favorite Color:</label>
+        <input type="color" id="fav-color" value="#3498db">
+        
+        <label for="animation-style">Preferred Animation:</label>
+        <select id="animation-style">
+            <option value="spin">Spin</option>
+            <option value="bounce">Bounce</option>
+            <option value="none">None</option>
+        </select>
+        
+        <button id="save-prefs">Save Preferences</button>
+    </div>
+
+    <div class="content-box" id="animated-box">
+        Hello!
+    </div>
+
+    <div class="controls">
+        <button id="start-animation">Start Animation</button>
+        <button id="stop-animation">Stop Animation</button>
+        <button id="change-color">Change Box Color</button>
+    </div>
+
+    <script>
+        // DOM Elements
+        const themeToggle = document.getElementById('toggle-theme');
+        const animatedBox = document.getElementById('animated-box');
+        const startBtn = document.getElementById('start-animation');
+        const stopBtn = document.getElementById('stop-animation');
+        const colorBtn = document.getElementById('change-color');
+        const savePrefsBtn = document.getElementById('save-prefs');
+        const usernameInput = document.getElementById('username');
+        const favColorInput = document.getElementById('fav-color');
+        const animationStyleSelect = document.getElementById('animation-style');
+
+        // Load saved preferences
+        function loadPreferences() {
+            // Theme
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Username
+            const savedName = localStorage.getItem('username');
+            if (savedName) {
+                usernameInput.value = savedName;
+                animatedBox.textContent = `Hello, ${savedName}!`;
+            }
+            
+            // Favorite Color
+            const savedColor = localStorage.getItem('favColor');
+            if (savedColor) {
+                favColorInput.value = savedColor;
+                animatedBox.style.backgroundColor = savedColor;
+            }
+            
+            // Animation Style
+            const savedAnimation = localStorage.getItem('animationStyle');
+            if (savedAnimation) {
+                animationStyleSelect.value = savedAnimation;
+            }
+        }
+
+        // Toggle dark mode
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // Start animation
+        startBtn.addEventListener('click', () => {
+            // Clear any existing animations
+            animatedBox.classList.remove('spin-animation', 'bounce-animation');
+            
+            // Apply selected animation
+            const animationType = animationStyleSelect.value;
+            if (animationType !== 'none') {
+                animatedBox.classList.add(`${animationType}-animation`);
+            }
+        });
+
+        // Stop animation
+        stopBtn.addEventListener('click', () => {
+            animatedBox.classList.remove('spin-animation', 'bounce-animation');
+        });
+
+        // Change box color
+        colorBtn.addEventListener('click', () => {
+            const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+            animatedBox.style.backgroundColor = randomColor;
+        });
+
+        // Save preferences
+        savePrefsBtn.addEventListener('click', () => {
+            // Save username
+            const username = usernameInput.value.trim();
+            if (username) {
+                localStorage.setItem('username', username);
+                animatedBox.textContent = `Hello, ${username}!`;
+            }
+            
+            // Save favorite color
+            localStorage.setItem('favColor', favColorInput.value);
+            animatedBox.style.backgroundColor = favColorInput.value;
+            
+            // Save animation preference
+            localStorage.setItem('animationStyle', animationStyleSelect.value);
+            
+            alert('Preferences saved!');
+        });
+
+        // Initialize the page
+        loadPreferences();
+    </script>
+</body>
+</html>
